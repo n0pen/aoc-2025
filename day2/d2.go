@@ -2,19 +2,23 @@ package main
 
 import (
 	"fmt"
-	"math"
 	"os"
 	"strconv"
 	"strings"
 )
 
 func isProblem(value int64) bool {
-	length := int64(math.Ceil(math.Log10(float64(value))))
-	if length%2 == 1 {
-		return false
+
+	str := strconv.FormatInt(value, 10)
+	for i := 1; i <= len(str)/2; i++ {
+		newstr := str[:i]
+		cnt := strings.Count(str, newstr)
+		if cnt*i >= len(str) {
+			return true
+		}
 	}
-	pow := int64(math.Pow10(int(length >> 1)))
-	return value/pow == value%pow
+	return false
+
 }
 
 func main() {
