@@ -12,7 +12,7 @@ const dialLength = 100
 
 func main() {
 	position := 50
-	file, _ := os.ReadFile("./day1/input")
+	file, _ := os.ReadFile("./day1/input.txt")
 	counter := 0
 	filestr := strings.Replace(string(file), "\r\n", "\n", -1)
 	for _, str := range strings.Split(filestr, "\n") {
