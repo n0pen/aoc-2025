@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-func get_space(x, y int, storage []string) int {
+func getSpace(x, y int, storage []string) int {
 	masks := []string{
 		"@@@", "@ @", "@@@",
 	}
@@ -22,7 +22,6 @@ func get_space(x, y int, storage []string) int {
 			if scanx < 0 || scanx >= len(storage[y]) {
 				continue
 			}
-			//fmt.Println(storage[scany][scanx], masks[posy][posx])
 			if storage[scany][scanx] == masks[posy][posx] {
 				count -= 1
 			}
@@ -40,14 +39,24 @@ func main() {
 
 	str := strings.Split(string(file), "\n")
 
-	fmt.Println(get_space(5, 2, str))
-
-	for i, row := range str {
-		for j, _ := range row {
-			if row[j] == '@' {
-				sum += get_space(j, i, str)
+	for {
+		lpcnt := 0
+		for i, row := range str {
+			for j := range row {
+				if row[j] == '@' {
+					res := getSpace(j, i, str)
+					sum += res
+					lpcnt += res
+					if res > 0 {
+						var val = &str[i]
+						*val = str[i][0:j] + " " + str[i][j+1:]
+					}
+				}
 			}
 		}
+		if lpcnt == 0 {
+			break
+		}
 	}
-	fmt.Println(len(str), sum)
+	fmt.Println(sum)
 }
