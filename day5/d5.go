@@ -15,7 +15,7 @@ type ValueRange struct {
 
 func main() {
 	file, _ := os.ReadFile("./day5/input.txt")
-	sum := 0
+	sum := int64(0)
 
 	input := strings.Split(string(file), "\n\n")
 
@@ -34,32 +34,24 @@ func main() {
 		ranges2[i] = val
 	}
 	slices.SortFunc(ranges2, func(i, j ValueRange) int { return int(i.min - j.min) })
-	ids := strings.Split(input[1], "\n")
-	ids2 := make([]int64, len(ids))
-
-	for i, line := range ids {
-		val, _ := strconv.ParseInt(line, 10, 64)
-		ids2[i] = val
-	}
-	slices.SortFunc(ids2, func(i, j int64) int { return int(i - j) })
-
-	lastRage := 0
-	fmt.Println(ids2)
 	fmt.Println(ranges2)
-	for i := 0; i < len(ids2); i++ {
 
-		for j := lastRage; j < len(ranges2); j++ {
-			if ids2[i] >= ranges2[j].min {
-				lastRage = j
+	for j := 0; j < len(ranges2); j++ {
 
-				if ids2[i] <= ranges2[j].max {
-					sum += 1
-					break
+		curmax, curmin := ranges2[j].max, ranges2[j].min
+
+		for i := j + 1; ; i++ {
+
+			if i < len(ranges2) && ranges2[i].min <= curmax {
+				if ranges2[i].max > curmax {
+					curmax = ranges2[i].max
 				}
-				if j+1 < len(ranges2) && ranges2[j+1].min > ids2[i] {
 
-					break
-				}
+				j += 1
+
+			} else {
+				sum += curmax - curmin + 1
+				break
 			}
 		}
 
