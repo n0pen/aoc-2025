@@ -3,38 +3,41 @@ package main
 import (
 	"fmt"
 	"os"
-	"regexp"
-	"slices"
 	"strings"
 )
 
-func moveTachion(input []string) int {
-	sum := 0
-	nextString := []byte(input[1])
-	start := slices.Index([]byte(input[0]), 'S')
-	nextString[start] = '|'
-	regBeam := regexp.MustCompile("\\|")
-	for i := 2; i < len(input)-1; i++ {
-		beams := regBeam.FindAllIndex(nextString, -1)
-		nextString = []byte(input[i])
-		for _, arr := range beams {
-			if input[i][arr[0]] == '^' {
-				sum += 1
-				nextString[arr[0]-1] = '|'
-				nextString[arr[0]+1] = '|'
-			} else {
-				nextString[arr[0]] = '|'
-			}
-		}
+type Coords struct {
+	x, y int
+}
+
+func moveTachion(input []string, x, y int, cache map[Coords]int) int {
+	_, ok := cache[Coords{x, y}]
+	if ok {
+		return cache[Coords{x, y}]
 	}
-	return sum
+	if y >= len(input) {
+		cache[Coords{x, y}] = 1
+		return 1
+	}
+	if input[y][x] == '.' {
+		val := moveTachion(input, x, y+1, cache)
+		cache[Coords{x, y}] = val
+		return val
+	} else {
+		val := moveTachion(input, x-1, y+1, cache) + moveTachion(input, x+1, y+1, cache)
+		cache[Coords{x, y}] = val
+		return val
+	}
+
 }
 
 func main() {
 
 	file, _ := os.ReadFile("day7/input.txt")
 	input := strings.Split(string(file), "\n")
+	cache := make(map[Coords]int)
+	x := strings.Index(input[0], "S")
 
-	fmt.Println(moveTachion(input))
+	fmt.Println(moveTachion(input, x, 1, cache))
 
 }
