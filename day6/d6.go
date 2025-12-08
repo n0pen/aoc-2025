@@ -11,48 +11,55 @@ import (
 func main() {
 	file, _ := os.ReadFile("./day6/input.txt")
 	sum := int64(0)
-	var vals [][]int64
 
 	input := strings.Split(string(file), "\n")
 	if len(input) < 2 {
 		fmt.Println(0)
 		return
 	}
-	vals = make([][]int64, len(input)-1)
-	var operators []string
+	var operators = input[len(input)-1]
+	fmt.Println(operators)
+	curind := 0
+	for {
 
-	for i, row := range input {
-		reg := regexp.MustCompile("\\s+")
-		rowvals := reg.Split(row, -1)
-
-		if i < len(vals) {
-			vals[i] = make([]int64, len(rowvals))
-		} else {
-			operators = make([]string, len(rowvals))
+		reg := regexp.MustCompile("([*+])")
+		op := operators[curind]
+		lengarr := reg.FindIndex([]byte(operators[curind+1:]))
+		var leng int
+		if len(lengarr) == 2 {
+			leng = lengarr[0]
 		}
-		for j, valstring := range rowvals {
-			val := strings.ReplaceAll(valstring, " ", "")
-			if i < len(vals) {
+		var problem int64
+		if op == '*' {
+			problem = 1
+		}
 
-				vals[i][j], _ = strconv.ParseInt(val, 10, 64)
+		fmt.Println(string(op), leng)
+		var bonus int
+		if leng == 0 {
+			bonus = len(input[0]) - curind
+		}
+		for i := 0; i < leng+bonus; i++ {
+			varstr := ""
+			for j := 0; j < len(input)-1; j++ {
+				varstr += string(input[j][curind+i])
+			}
+			fmt.Println(varstr)
+			val, _ := strconv.ParseInt(strings.ReplaceAll(varstr, " ", ""), 10, 64)
+			if op == '*' {
+				problem *= val
 			} else {
-				operators[j] = val
+				problem += val
 			}
 		}
-	}
+		sum += int64(problem)
 
-	for i := 0; i < len(operators); i++ {
-
-		rowval := vals[0][i]
-		for j := 1; j < len(vals); j++ {
-			if operators[i] == "*" {
-				rowval *= vals[j][i]
-			} else {
-				rowval += vals[j][i]
-			}
+		if leng == 0 {
+			break
 		}
-		sum += rowval
-		fmt.Println(sum)
+
+		curind = curind + leng + 1
+
 	}
 
 	fmt.Println(sum)
