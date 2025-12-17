@@ -376,12 +376,7 @@ func branchSimplex(diagram Diagram, optimal, initial [][]float64, constraints *[
 	maxdifidx := -1
 	for i, press := range presses {
 		if diff := press - math.Floor(press); diff > 0.000001 {
-			con := Constraint{i, int(math.Floor(press))}
-			if slices.Index(*constraints, con) >= 0 {
-				continue
-			}
-			*constraints = append(*constraints, con)
-			pivots = append(pivots, i)
+
 			if maxdifidx == -1 {
 				maxdifidx = i
 			} else if diff > presses[maxdifidx]-math.Floor(presses[maxdifidx]) {
@@ -392,7 +387,13 @@ func branchSimplex(diagram Diagram, optimal, initial [][]float64, constraints *[
 	if maxdifidx == -1 {
 		return getTotal(optimal, diagram)
 	}
+	con := Constraint{maxdifidx, int(math.Floor(presses[maxdifidx]))}
+	if slices.Index(*constraints, con) >= 0 {
+		return getTotal(optimal, diagram)
+	}
+	*constraints = append(*constraints, con)
 	mini := math.MaxInt
+	pivots = []int{maxdifidx}
 	for _, piv := range pivots {
 
 		rows := len(initial)
